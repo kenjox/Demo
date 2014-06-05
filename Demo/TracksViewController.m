@@ -160,7 +160,6 @@
     
     NSLog(@"Tracks in that album %@ are %@",album.title,album.tracks);
     
-    decelerate = NO;
 }
 
 
