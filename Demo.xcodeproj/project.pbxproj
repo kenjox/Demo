@@ -127,15 +127,9 @@
 		4510B6D21940590D008BF6A0 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
-				4510B6DB1940590D008BF6A0 /* AppDelegate.h */,
-				4510B6DC1940590D008BF6A0 /* AppDelegate.m */,
+				45501B471949E204005CB99D /* models */,
+				45501B461949E1F7005CB99D /* view controllers */,
 				4510B6DE1940590D008BF6A0 /* Main.storyboard */,
-				4510B70319405B4D008BF6A0 /* TracksViewController.h */,
-				4510B70419405B4D008BF6A0 /* TracksViewController.m */,
-				4510B70619405BB2008BF6A0 /* Album.h */,
-				4510B70719405BB2008BF6A0 /* Album.m */,
-				4510B70919405BF2008BF6A0 /* Track.h */,
-				4510B70A19405BF2008BF6A0 /* Track.m */,
 				4510B6E41940590D008BF6A0 /* Images.xcassets */,
 				4510B6D31940590D008BF6A0 /* Supporting Files */,
 			);
@@ -145,6 +139,8 @@
 		4510B6D31940590D008BF6A0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				4510B6DB1940590D008BF6A0 /* AppDelegate.h */,
+				4510B6DC1940590D008BF6A0 /* AppDelegate.m */,
 				4510B6D41940590D008BF6A0 /* Demo-Info.plist */,
 				4510B6D51940590D008BF6A0 /* InfoPlist.strings */,
 				4510B6D81940590D008BF6A0 /* main.m */,
@@ -169,6 +165,26 @@
 				4510B6F41940590D008BF6A0 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		45501B461949E1F7005CB99D /* view controllers */ = {
+			isa = PBXGroup;
+			children = (
+				4510B70319405B4D008BF6A0 /* TracksViewController.h */,
+				4510B70419405B4D008BF6A0 /* TracksViewController.m */,
+			);
+			path = "view controllers";
+			sourceTree = "<group>";
+		};
+		45501B471949E204005CB99D /* models */ = {
+			isa = PBXGroup;
+			children = (
+				4510B70619405BB2008BF6A0 /* Album.h */,
+				4510B70719405BB2008BF6A0 /* Album.m */,
+				4510B70919405BF2008BF6A0 /* Track.h */,
+				4510B70A19405BF2008BF6A0 /* Track.m */,
+			);
+			path = models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -10,7 +10,7 @@
 
 @implementation Album
 
--(instancetype) initWithTitle:(NSString *)title cover:(NSString *)coverUrl tracks:(NSDictionary *)tracks
+-(instancetype) initWithTitle:(NSString *)title cover:(NSString *)coverUrl tracks:(NSArray *)tracks
 {
     self = [super init];
     

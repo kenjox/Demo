@@ -15,9 +15,11 @@
 {
     UIScrollView *bgScrollView;
     UIPageControl *pageControl;
-    NSMutableArray *images;
-    NSMutableArray *albumsWithTracks;
+    UIButton *downloadButton;
 }
+
+@property (nonatomic, strong) NSMutableArray *images;
+@property (nonatomic, strong) NSMutableArray *albumsWithTracks;
 
 
 
@@ -31,14 +33,30 @@
 {
     [super viewDidLoad];
     
+    [self setup];
     [self loadAlbums];
     
+}
+
+-(void)setup
+{
+    _images = [@[] mutableCopy];
+    _albumsWithTracks = [@[] mutableCopy];
+    
+    downloadButton = [[UIButton alloc] initWithFrame:CGRectMake(254, 12, 50, 25)];
+    
+    [downloadButton setTitle:@"View" forState:UIControlStateNormal];
+    [downloadButton.titleLabel setFont:[UIFont systemFontOfSize:12.0f]];
+    [downloadButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [[downloadButton layer] setBorderColor:[UIColor blackColor].CGColor];
+    [[downloadButton layer] setBorderWidth:0.5f];
+
 }
 -(void)handleAlbumResponse:(NSDictionary *)response
 {
     
     
-    bgScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.scrollView.frame.size.width,130)];
+    bgScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.scrollView.frame.size.width,320)];
     bgScrollView.delegate = self;
     bgScrollView.pagingEnabled = YES;
     bgScrollView.scrollEnabled = YES;
@@ -46,23 +64,23 @@
     bgScrollView.showsHorizontalScrollIndicator = NO;
     bgScrollView.showsVerticalScrollIndicator = NO;
     
-    images = [NSMutableArray array];
+    _images = [NSMutableArray array];
     
     if (response) {
         
         NSArray *albumArray = response[@"albums"];
         
-        albumsWithTracks = [NSMutableArray array];
+        _albumsWithTracks = [NSMutableArray array];
         
         
         for (NSDictionary *albumDic in albumArray) {
             
-            [images addObject:albumDic[@"cover"]];
+            [_images addObject:albumDic[@"cover"]];
             
             Album *album = [[Album alloc] initWithTitle:albumDic[@"title"] cover:albumDic[@"cover"] tracks:albumDic[@"tracks"]];
-            [albumsWithTracks addObject:album];
+            [_albumsWithTracks addObject:album];
             
-            NSInteger bgImagesLength = [images count];
+            NSInteger bgImagesLength = [_images count];
             
             for (int i = 0; i < bgImagesLength; i++ )
             {
@@ -71,19 +89,10 @@
                 frame.origin.y = 0;
                 frame.size = bgScrollView.frame.size;
                 
-                Album *album = albumsWithTracks[i];
+                Album *album = _albumsWithTracks[i];
                 
                 UIImageView *cover = [[UIImageView alloc] initWithFrame:frame];
                 cover.contentMode = UIViewContentModeScaleAspectFill;
-                cover.alpha = 0.8;
-                
-                UILabel *coverTitle = [[UILabel alloc] initWithFrame:CGRectMake(20, 54, 280, 25)];
-                coverTitle.text = album.title;
-                coverTitle.font = [UIFont fontWithName:@"HelveticaNeue" size:25];
-                coverTitle.textAlignment = NSTextAlignmentCenter;
-                coverTitle.textColor = [UIColor whiteColor];
-                [cover addSubview:coverTitle];
-                
                 
                 NSURL *imageUrl = [NSURL URLWithString:album.coverUrl];
                 
@@ -97,13 +106,13 @@
             }
             
             //Content size of the bgScrollview
-            bgScrollView.contentSize = CGSizeMake(bgScrollView.frame.size.width * ([images count]),
+            bgScrollView.contentSize = CGSizeMake(bgScrollView.frame.size.width * ([albumArray count]),
                                                   bgScrollView.frame.size.height);
             [self.scrollView addSubview:bgScrollView];
             
             //Page control
-            pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 110, bgScrollView.frame.size.width, 10)];
-            pageControl.numberOfPages = [images count];
+            pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 235, bgScrollView.frame.size.width, 10)];
+            pageControl.numberOfPages = [albumArray count];
             pageControl.pageIndicatorTintColor = [UIColor whiteColor];
             pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
             
@@ -136,6 +145,57 @@
     
 }
 
+#pragma mark - UITableViewDataSourceDelegates
+
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    NSUInteger rows = 0;
+    if ([_albumsWithTracks count]) {
+        NSUInteger currentPage = pageControl.currentPage;
+        
+        Album *album = (Album *)_albumsWithTracks[currentPage];
+        NSArray *tracks = album.tracks;
+        
+        rows = tracks.count;
+    }
+    
+    return rows;
+    
+    
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIdentifier = @"trackCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    
+    NSUInteger currentPage = pageControl.currentPage;
+    
+    
+    if ([_albumsWithTracks count]) {
+        
+        
+        Album *album = (Album *)_albumsWithTracks[currentPage];
+        NSArray *tracks = album.tracks;
+        cell.textLabel.text = [tracks[indexPath.row] objectForKey:@"title"];
+        NSString *type = [tracks[indexPath.row] objectForKey:@"type"];
+        
+        
+        
+        if ([type isEqualToString:@"view"]) {
+            [cell addSubview:downloadButton];
+        }
+        
+        
+        
+    }
+
+    
+    return cell;
+}
+
+
 #pragma mark -m UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -144,47 +204,8 @@
     NSInteger page = lround(fractionalPage);
     pageControl.currentPage = page;
     
+    [self.tableView reloadData];
     
 }
-
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    NSLog(@"Finised page one");
-    CGFloat pageWidth = bgScrollView.frame.size.width;
-    float fractionalPage = bgScrollView.contentOffset.x / pageWidth;
-    NSInteger page = lround(fractionalPage);
-    pageControl.currentPage = page;
-    
-    Album *album =  albumsWithTracks[page];
-    
-    NSLog(@"Tracks in that album %@ are %@",album.title,album.tracks);
-    
-}
-
-
-
-
-
-#pragma mark - UITableViewDataSourceDelegates
-
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    // Return the number of rows in the section.
-    
-    
-    return 4;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"trackCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    
-    return cell;
-}
-
-
 
 @end

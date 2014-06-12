@@ -12,9 +12,9 @@
 
 @property (copy,nonatomic) NSString *title;
 @property (copy,nonatomic) NSString *coverUrl;
-@property (nonatomic,copy) NSDictionary *tracks;
+@property (nonatomic,copy) NSArray *tracks;
 
--(instancetype) initWithTitle:(NSString *)title cover:(NSString *)coverUrl tracks:(NSDictionary *)tracks;
+-(instancetype) initWithTitle:(NSString *)title cover:(NSString *)coverUrl tracks:(NSArray *)tracks;
 
 @end
 
