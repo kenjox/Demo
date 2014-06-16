@@ -45,7 +45,7 @@
     
     downloadButton = [[UIButton alloc] initWithFrame:CGRectMake(254, 12, 50, 25)];
     
-    [downloadButton setTitle:@"View" forState:UIControlStateNormal];
+    [downloadButton setTitle:@"Buy" forState:UIControlStateNormal];
     [downloadButton.titleLabel setFont:[UIFont systemFontOfSize:12.0f]];
     [downloadButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [[downloadButton layer] setBorderColor:[UIColor blackColor].CGColor];
@@ -183,7 +183,7 @@
         
         
         
-        if ([type isEqualToString:@"view"]) {
+        if ([type isEqualToString:@"buy"]) {
             [cell addSubview:downloadButton];
         }
         
